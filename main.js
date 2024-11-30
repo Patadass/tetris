@@ -49,11 +49,6 @@ function drop(shape){
     });
 }
 
-function test(x,y){
-    let children = game_canvas.children;
-    children[x*10+y].style.backgroundColor = "blue";
-}
-
 function check_collision_left(shape){
     let children = game_canvas.children;
     for(let i = 0;i < shape.shape.length;i++){
