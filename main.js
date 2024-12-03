@@ -9,6 +9,13 @@ function load(){
         div.style.backgroundColor = "white";
         div.style.height = WIDTH/10-parseInt(div.style.borderWidth) + "px";
         div.style.width = WIDTH/10-parseInt(div.style.borderWidth) + "px";
+        div.addEventListener('click', () => {
+            if(div.style.backgroundColor !== 'white'){
+                div.style.backgroundColor = 'white';
+            }else{
+                div.style.backgroundColor = 'green';
+            }
+        })
         game_canvas.appendChild(div);
     }
 }
@@ -18,9 +25,13 @@ function remove_event_listener(){
     document.dispatchEvent(event);
 }
 
+function start(){
+    drop(Object.create(SHAPES[Math.floor(Math.random()*SHAPES.length)]));
+}
+
 function drop(shape){
+    line_clear();
     let interval_id = window.setInterval(() => drop_shape(shape,interval_id), 200);
-    //clearInterval(drop_speed);
 
     let key_down = false;
     document.addEventListener("keydown", function key_handle(event){
@@ -30,6 +41,7 @@ function drop(shape){
         key_down = true;
         if(event.key === "q"){//TODO:make virtual event not be "q"
             document.removeEventListener("keydown", key_handle);
+            drop(Object.create(SHAPES[Math.floor(Math.random()*SHAPES.length)]));
         }
         if(event.key === 'd'){
             if(check_collision_right(shape) !== -1){
@@ -206,6 +218,43 @@ function rotate_right(shape){
     return n_shape;
 }
 
+function line_clear(){
+    let children = game_canvas.children;
+    let height = 20;
+    let width = 10;
+    for(let i = 0;i < height;i++){
+        let shift = true;
+        for(let j = 0;j < width;j++){
+            if(children[i*10+j].style.backgroundColor === 'white'){
+                shift = false;
+            }
+        }
+        if(shift){
+            for(let j = 0;j < width;j++){
+                children[i*10+j].style.backgroundColor = 'white';
+            }
+            shift_children_down(children,i);
+        }
+    }
+}
+
+function shift_children_down(children, row){
+    let width = 10;
+    for(let i = row;i >= 1;i--){
+        for(let j = 0;j < width;j++){
+            if(children[(i-1)*10+j].style.backgroundColor === 'white'){
+                continue;
+            }
+            children[i*10+j].style.backgroundColor = children[(i-1)*10+j].style.backgroundColor;
+            children[(i-1)*10+j].style.backgroundColor = 'white';
+        }
+    }
+}
+
+function game_over(){
+    return false;
+}
+
 function btnDrop(){
     let p = [i_block,t_block,j_block,l_block,o_block,s_block,l_block];
     let b = document.getElementById("select").value;
@@ -286,3 +335,4 @@ let j_block = {
     j:5,
     color:'pink'
 };
+const SHAPES = [i_block,t_block,o_block,s_block,z_block,l_block,j_block];
