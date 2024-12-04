@@ -1,6 +1,10 @@
 const game_canvas = document.getElementById("gameCanvas");
 const HEIGHT = parseInt(game_canvas.style.height);
 const WIDTH = parseInt(game_canvas.style.width);
+let score = 0;
+let level = 1;
+let line_counter = 0;
+let interval = 1000;
 
 function load(){
     for(let i = 0;i < 10*20;i++){
@@ -20,33 +24,48 @@ function load(){
     }
 }
 
+function reset_game_canvas(){
+    let children = game_canvas.children;
+    for(let i = 0;i < children.length;i++){
+        children[i].style.backgroundColor = 'white';
+    }
+}
+
 function remove_event_listener(){
     let event = new KeyboardEvent("keydown", {key: "q"});
     document.dispatchEvent(event);
 }
 
 function start(){
+    score = 0;
+    level = 1;
+    interval = 1000;
+    document.getElementById("score").innerHTML = `Score: ${score}`;
+    document.getElementById('level').innerHTML = `Level: ${level}`;
+    reset_game_canvas();
     drop(get_new_shape());
 }
 
 function drop(shape){
     line_clear();
-    let interval_id = window.setInterval(() => drop_shape(shape,interval_id), 200);
+    let interval_id = window.setInterval(() => drop_shape(shape,interval_id), interval);
 
     let key_down = false;
     document.addEventListener("keydown", function key_handle(event){
         if(key_down){
             return;
         }
+
         key_down = true;
 
-        if(event.key === ' '){
+        if(event.key === ' '){ //(space bar) but its broken
             erase_previous_block(shape);
             while(check_collision(shape,interval_id) !== -1){
                 shape.i++;
             }
-            document.removeEventListener("keydown", key_handle);
             draw_block_on_canvas(shape);
+            drop(get_new_shape());
+            document.removeEventListener("keydown", key_handle);
         }
 
         if(event.key === "q"){//TODO:make virtual event not be "q"
@@ -239,6 +258,7 @@ function line_clear(){
     let children = game_canvas.children;
     let height = 20;
     let width = 10;
+    let lines_cleared = 0;
     for(let i = 0;i < height;i++){
         let shift = true;
         for(let j = 0;j < width;j++){
@@ -250,8 +270,20 @@ function line_clear(){
             for(let j = 0;j < width;j++){
                 children[i*10+j].style.backgroundColor = 'white';
             }
+            lines_cleared += 100;
             shift_children_down(children,i);
         }
+    }
+    if(lines_cleared !== 0){
+        line_counter += lines_cleared/100;
+        if(line_counter >= 10){
+            level++;
+            line_counter-=10;
+            interval -= 100;
+            document.getElementById('level').innerHTML = `Level: ${level}`;
+        }
+        score += lines_cleared * level;
+        document.getElementById("score").innerHTML = `Score: ${score}`;
     }
 }
 
