@@ -26,7 +26,7 @@ function remove_event_listener(){
 }
 
 function start(){
-    drop(Object.create(SHAPES[Math.floor(Math.random()*SHAPES.length)]));
+    drop(get_new_shape());
 }
 
 function drop(shape){
@@ -39,23 +39,40 @@ function drop(shape){
             return;
         }
         key_down = true;
+
+        if(event.key === ' '){
+            erase_previous_block(shape);
+            while(check_collision(shape,interval_id) !== -1){
+                shape.i++;
+            }
+            document.removeEventListener("keydown", key_handle);
+            draw_block_on_canvas(shape);
+        }
+
         if(event.key === "q"){//TODO:make virtual event not be "q"
             document.removeEventListener("keydown", key_handle);
-            drop(Object.create(SHAPES[Math.floor(Math.random()*SHAPES.length)]));
+            drop(get_new_shape());
         }
+
         if(event.key === 'd'){
             if(check_collision_right(shape) !== -1){
                 erase_previous_block(shape);
-                check_collision(shape,interval_id);
                 shape.j++;
+                if(check_collision(shape,interval_id) === -1){
+                    document.removeEventListener("keydown", key_handle);
+                    drop(get_new_shape());
+                }
                 draw_block_on_canvas(shape);
             }
         }
         if(event.key === 'a'){
             if(check_collision_left(shape) !== -1){
                 erase_previous_block(shape);
-                check_collision(shape,interval_id);
                 shape.j--;
+                if(check_collision(shape,interval_id) === -1){
+                    document.removeEventListener("keydown", key_handle);
+                    drop(get_new_shape());
+                }
                 draw_block_on_canvas(shape);
             }
         }
@@ -115,6 +132,7 @@ function check_collision_right(shape){
 }
 
 function check_collision(shape,interval_id){
+    //doesn't work for some scenarios i think when the shape.shape[x] is undefined
     //TODO:doesn't work for the first line returns -1(fix) then works good
     let children = game_canvas.children;
     if(shape.i + shape.shape.length > 19){
@@ -164,8 +182,6 @@ function draw_block_on_canvas(shape){
 }
 
 function drop_shape(shape,interval_id){
-    //let children = game_canvas.children;
-
     if(check_collision(shape,interval_id) === -1){
         return;
     }
@@ -177,6 +193,7 @@ function drop_shape(shape,interval_id){
 }
 
 function rotate_left(shape){
+    //does not work
     let n_shape = Object.create(shape);
     let rows = shape.shape.length;
     let col = shape.shape[0].length;
@@ -253,6 +270,10 @@ function shift_children_down(children, row){
 
 function game_over(){
     return false;
+}
+
+function get_new_shape(){
+    return Object.create(SHAPES[Math.floor(Math.random()*SHAPES.length)]);
 }
 
 function btnDrop(){
