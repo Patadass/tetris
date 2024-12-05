@@ -279,7 +279,10 @@ function line_clear(){
         if(line_counter >= 10){
             level++;
             line_counter-=10;
-            interval -= 100;
+            interval -= 100;//TODO: don't do this interval can become negative
+            if(interval <= 0){
+                interval = 1000;
+            }
             document.getElementById('level').innerHTML = `Level: ${level}`;
         }
         score += lines_cleared * level;
