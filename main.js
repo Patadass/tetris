@@ -320,12 +320,9 @@ function btnDrop(){
 
 let i_block = {
     shape:[
-        [1],
-        [1],
-        [1],
-        [1]
+        [1,1,1,1]
     ],
-    i:-3,
+    i:-1,
     j:5,
     color:"lightblue"
 };
@@ -372,22 +369,20 @@ let z_block = {
 
 let l_block = {
     shape:[
-        [1,undefined],
-        [1,undefined],
-        [1,1]
+        [undefined,undefined,1],
+        [1,1,1]
     ],
-    i:-2,
+    i:-1,
     j:5,
     color:'orange'
 };
 
 let j_block = {
     shape:[
-        [undefined,1],
-        [undefined,1],
-        [1,1],
+        [1,undefined,undefined],
+        [1,1,1]
     ],
-    i:-2,
+    i:-1,
     j:5,
     color:'pink'
 };
